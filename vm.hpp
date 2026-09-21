@@ -99,7 +99,7 @@ void VM::dump_memory(std::ostream& f, size_t words) const {
     for (size_t i = 0; i < words; ++i) {
         int16_t cur_word = mem[i];
         f << std::format("{:#05x} |", i);
-        for (int block = 0; block < 16; block += 4) {
+        for (int block = 12; block >= 0; block -= 4) {
             f << ' ' << std::bitset<4>{(cur_word >> block) & 0xFull};
         }
         f << '\n';
