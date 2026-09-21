@@ -2,6 +2,7 @@
 #define E79F6D1E_B8D1_4C98_A8C3_54984007213C
 
 #include <array>
+#include <bitset>
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
@@ -39,6 +40,7 @@ struct VM {
     bool gt : 1;
 
     void run(const std::vector<int16_t>& input, Recorder* recorder = nullptr);
+    void dump_memory(std::ostream& f, size_t words) const;
 };
 
 enum class Operation {
@@ -90,6 +92,17 @@ void VM::run(const std::vector<int16_t>& input, Recorder* recorder) {
         if (recorder) {
             recorder->snap(*this);
         }
+    }
+}
+
+void VM::dump_memory(std::ostream& f, size_t words) const {
+    for (size_t i = 0; i < words; ++i) {
+        int16_t cur_word = mem[i];
+        f << std::format("{:#05x} |", i);
+        for (int block = 0; block < 16; block += 4) {
+            f << ' ' << std::bitset<4>{(cur_word >> block) & 0xFull};
+        }
+        f << '\n';
     }
 }
 

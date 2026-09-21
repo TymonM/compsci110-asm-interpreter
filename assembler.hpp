@@ -11,6 +11,7 @@ enum class TokenType {
     Colon,
     Dot,
     Numeric,
+    Comment,
     Newline
 };
 struct Token {
@@ -78,6 +79,15 @@ struct NumericToken : Token {
         return &value;
     }
 };
+struct CommentToken : Token {
+    bool push(char c) {
+        return c != '\n';
+    }
+
+    TokenType get_type() {
+        return TokenType::Comment;
+    }
+};
 struct NewlineToken : Token {
     bool push(char c) {
         return isspace(c);
@@ -131,6 +141,9 @@ Token* Tokenizer::newToken(char c) {
     if (c == '.') {
         return new DotToken{};
     }
+    if (c == '-') {
+        return new CommentToken{};
+    }
     if (c == '\n') {
         return new NewlineToken{};
     }
@@ -160,6 +173,9 @@ TokenStream Tokenizer::tokenize(const std::string& program) {
 struct Assembler {
     TokenStream token_stream;
     std::unordered_map<std::string, int16_t> symbol_mappings;
+    size_t assembled_size;
+
+    Assembler() : assembled_size(0) {}
 
     void build_symbol_mappings(Recorder& recorder);
     int16_t assemble_instruction(std::string opcode, int16_t loc, int16_t dest);
@@ -275,6 +291,9 @@ Recorder Assembler::assemble(const std::string& program, VM& vm) {
             if (cur_token->get_type() == TokenType::Newline) {
                 break;
             }
+            if (cur_token->get_type() == TokenType::Comment) {
+                continue;
+            }
             if (cur_token->get_type() == TokenType::Dot) {
                 // pseudo op
                 cur_token = token_stream.consume();
@@ -328,6 +347,7 @@ Recorder Assembler::assemble(const std::string& program, VM& vm) {
         if (valid_line) ++loc;
     }
 
+    assembled_size = loc;
     return std::move(recorder);
 }
 

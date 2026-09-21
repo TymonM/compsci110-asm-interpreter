@@ -1,0 +1,11 @@
+	.BEGIN	 -- line 1
+LOAD	 X       -- line 2
+SUBTRACT Y       -- line 3
+SUBTRACT Z       -- line 4
+STORE	 Z       -- line 5
+OUT	 Z       -- line 6
+HALT             -- line 7
+X: .DATA 19      -- line 8
+Y: .DATA 6       -- line 9
+Z: .DATA 3       -- line 10
+.END             -- line 11

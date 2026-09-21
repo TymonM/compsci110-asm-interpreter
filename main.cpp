@@ -7,16 +7,22 @@
 #include "vm.hpp"
 
 std::vector<short> inputs = {5, 2};
-std::string source = "source.txt";
 
-int main() {
-    std::ifstream in(source);
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        std::cerr << "Usage: ./this <asm-source>\n";
+        exit(1);
+    }
+    std::ifstream in(argv[1]);
     std::stringstream program;
     program << in.rdbuf();
 
-    Assembler assembler;
+    Assembler assembler{};
     VM vm;
     Recorder recorder = assembler.assemble(program.str(), vm);
+    vm.dump_memory(std::cout, assembler.assembled_size);  // print the assembled machine code
+    std::cout << '\n';
+
     vm.R = 0;
     vm.run(inputs, &recorder);
 
