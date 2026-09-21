@@ -207,6 +207,10 @@ void Assembler::build_symbol_mappings(Recorder& recorder) {
             cur_line_cnt = 0;
             continue;
         }
+        if (cur_token->get_type() == TokenType::Comment) {
+            --cur_line_cnt;
+            continue;
+        }
         if (cur_token->get_type() == TokenType::Dot) {
             cur_line_cnt -= 2;
         }
